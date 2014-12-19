@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  SwiftPopTipView
 //
-//  Created by mihael on 18.12.14.
+//  Created by Mihael Isaev on 18.12.14.
 //  Copyright (c) 2014 Mihael Isaev inc. All rights reserved.
 //
 

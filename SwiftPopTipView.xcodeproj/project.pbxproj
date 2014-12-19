@@ -13,6 +13,7 @@
 		4780D0241A43A03100E43757 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4780D0231A43A03100E43757 /* Images.xcassets */; };
 		4780D0271A43A03100E43757 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4780D0251A43A03100E43757 /* LaunchScreen.xib */; };
 		4780D0331A43A03100E43757 /* SwiftPopTipViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4780D0321A43A03100E43757 /* SwiftPopTipViewTests.swift */; };
+		4780D03D1A43A05100E43757 /* SwiftPopTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4780D03C1A43A05100E43757 /* SwiftPopTipView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		4780D02C1A43A03100E43757 /* SwiftPopTipViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftPopTipViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4780D0311A43A03100E43757 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4780D0321A43A03100E43757 /* SwiftPopTipViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPopTipViewTests.swift; sourceTree = "<group>"; };
+		4780D03C1A43A05100E43757 /* SwiftPopTipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftPopTipView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 			children = (
 				4780D01C1A43A03100E43757 /* AppDelegate.swift */,
 				4780D01E1A43A03100E43757 /* ViewController.swift */,
+				4780D03C1A43A05100E43757 /* SwiftPopTipView.swift */,
 				4780D0201A43A03100E43757 /* Main.storyboard */,
 				4780D0231A43A03100E43757 /* Images.xcassets */,
 				4780D0251A43A03100E43757 /* LaunchScreen.xib */,
@@ -213,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4780D01F1A43A03100E43757 /* ViewController.swift in Sources */,
+				4780D03D1A43A05100E43757 /* SwiftPopTipView.swift in Sources */,
 				4780D01D1A43A03100E43757 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

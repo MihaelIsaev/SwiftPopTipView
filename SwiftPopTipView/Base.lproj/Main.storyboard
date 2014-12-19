@@ -1,25 +1,134 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="yfm-Z9-Av1">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
-        <scene sceneID="tne-QT-ifu">
+        <!--Navigation Controller-->
+        <scene sceneID="LBo-H7-xJi">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
-                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <navigationController id="yfm-Z9-Av1" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NGk-fx-dVj">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="thf-Mj-6MO" kind="relationship" relationship="rootViewController" id="vQS-Ia-bQI"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Zkf-Zy-NkS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="162" y="622"/>
+        </scene>
+        <!--Swift Pop Tip Demo-->
+        <scene sceneID="pKY-60-6MU">
+            <objects>
+                <viewController id="thf-Mj-6MO" customClass="ViewController" customModule="SwiftPopTipView" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="YqW-Qe-KH0"/>
+                        <viewControllerLayoutGuide type="bottom" id="hy4-cC-8AB"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="VNM-5y-AHv">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="556"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IKK-vf-E8z">
+                                <rect key="frame" x="358" y="468" width="51" height="30"/>
+                                <state key="normal" title="Bottom">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="showPopTip:" destination="thf-Mj-6MO" eventType="touchUpInside" id="hjQ-Vm-t7D"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c9O-oM-fcE">
+                                <rect key="frame" x="16" y="263" width="30" height="30"/>
+                                <state key="normal" title="Left">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="showPopTip:" destination="thf-Mj-6MO" eventType="touchUpInside" id="K7E-DF-o99"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5uD-vV-Gnf">
+                                <rect key="frame" x="538" y="263" width="37" height="30"/>
+                                <state key="normal" title="Right">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="showPopTip:" destination="thf-Mj-6MO" eventType="touchUpInside" id="BWs-ei-O4v"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap any button to see tip view in action" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gik-Xn-i65">
+                                <rect key="frame" x="150" y="225" width="300" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="LWy-gr-30D"/>
+                                    <constraint firstAttribute="width" constant="300" id="anh-hx-ekM"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w5j-Uc-ArR">
+                                <rect key="frame" x="227" y="114" width="30" height="30"/>
+                                <state key="normal" title="Top">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="showPopTip:" destination="thf-Mj-6MO" eventType="touchUpInside" id="AeD-oa-1zD"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerY" secondItem="gik-Xn-i65" secondAttribute="centerY" constant="42.5" id="6Kd-hY-lxS"/>
+                            <constraint firstAttribute="centerY" secondItem="5uD-vV-Gnf" secondAttribute="centerY" id="Esg-on-SAt"/>
+                            <constraint firstAttribute="centerX" secondItem="w5j-Uc-ArR" secondAttribute="centerX" constant="58" id="I0r-jE-bRc"/>
+                            <constraint firstAttribute="centerY" secondItem="c9O-oM-fcE" secondAttribute="centerY" id="LSO-wh-0oM"/>
+                            <constraint firstAttribute="bottom" secondItem="IKK-vf-E8z" secondAttribute="bottom" constant="58" id="bBj-6w-Eh1"/>
+                            <constraint firstItem="w5j-Uc-ArR" firstAttribute="top" secondItem="VNM-5y-AHv" secondAttribute="top" constant="114" id="dSd-aj-CMV"/>
+                            <constraint firstAttribute="centerX" secondItem="gik-Xn-i65" secondAttribute="centerX" id="nNw-bK-qnF"/>
+                            <constraint firstAttribute="trailing" secondItem="5uD-vV-Gnf" secondAttribute="trailing" constant="25" id="q28-yR-gnI"/>
+                            <constraint firstAttribute="centerX" secondItem="IKK-vf-E8z" secondAttribute="centerX" constant="-83.5" id="yUo-51-XQi"/>
+                            <constraint firstItem="c9O-oM-fcE" firstAttribute="leading" secondItem="VNM-5y-AHv" secondAttribute="leading" constant="16" id="zO9-UF-TbX"/>
+                        </constraints>
+                    </view>
+                    <toolbarItems>
+                        <barButtonItem title="Left" id="wcR-d2-Rn4">
+                            <connections>
+                                <action selector="showPopTip:" destination="thf-Mj-6MO" id="Ko9-hn-xrO"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="pgE-3D-Eka"/>
+                        <barButtonItem title="Center" id="6R9-uQ-eo3">
+                            <connections>
+                                <action selector="showPopTip:" destination="thf-Mj-6MO" id="Bqm-ar-9XM"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="EsT-a3-nq8"/>
+                        <barButtonItem title="Right" id="Wy9-vt-TzB">
+                            <connections>
+                                <action selector="showPopTip:" destination="thf-Mj-6MO" id="aLi-T2-SQy"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <navigationItem key="navigationItem" title="Swift Pop Tip Demo" id="UsB-WN-Avk">
+                        <barButtonItem key="leftBarButtonItem" title="Left" id="YNb-6w-ntA">
+                            <connections>
+                                <action selector="showPopTip:" destination="thf-Mj-6MO" id="Hcm-nH-zsL"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Right" id="myp-YO-aMe">
+                            <connections>
+                                <action selector="showPopTip:" destination="thf-Mj-6MO" id="F8o-6z-wjJ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NCy-MS-utN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="842" y="622"/>
         </scene>
     </scenes>
 </document>
