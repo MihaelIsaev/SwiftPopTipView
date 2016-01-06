@@ -21,9 +21,9 @@ class ViewController: UIViewController {
         popTip.titleColor = UIColor.whiteColor()
         popTip.textColor = UIColor.whiteColor()
         if sender.dynamicType === UIBarButtonItem.self {
-            popTip.presentAnimatedPointingAtBarButtonItem(sender as UIBarButtonItem, autodismissAtTime: 2)
+            popTip.presentAnimatedPointingAtBarButtonItem(sender as! UIBarButtonItem, autodismissAtTime: 2)
         } else {
-            popTip.presentAnimatedPointingAtView(sender as UIView, inView: self.view, autodismissAtTime: 2)
+            popTip.presentAnimatedPointingAtView(sender as! UIView, inView: self.view, autodismissAtTime: 2)
         }
     }
 }
