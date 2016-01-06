@@ -73,7 +73,7 @@ class SwiftPopTipView: UIView {
     var autoDismissTimer: NSTimer?
     var dismissTarget: UIButton?
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.opaque = false
         self.backgroundColor = UIColor.clearColor()
@@ -114,8 +114,8 @@ class SwiftPopTipView: UIView {
     }
     
     func contentFrame() -> CGRect {
-        var bubbleFrame = self.bubbleFrame()
-        var contentFrame = CGRectMake(bubbleFrame.origin.x + self.cornerRadius,
+        let bubbleFrame = self.bubbleFrame()
+        let contentFrame = CGRectMake(bubbleFrame.origin.x + self.cornerRadius,
             bubbleFrame.origin.y + self.cornerRadius,
             bubbleFrame.size.width - self.cornerRadius*2,
             bubbleFrame.size.height - self.cornerRadius*2)
@@ -124,20 +124,20 @@ class SwiftPopTipView: UIView {
     
     override func layoutSubviews() {
         if let customView = self.customView {
-            var contentFrame = self.contentFrame()
+            let contentFrame = self.contentFrame()
             customView.frame = contentFrame
         }
     }
     
     override func drawRect(rect: CGRect) {
-        var bubbleRect = self.bubbleFrame()
+        let bubbleRect = self.bubbleFrame()
         
-        var c = UIGraphicsGetCurrentContext()
+        let c = UIGraphicsGetCurrentContext()
         
         CGContextSetRGBStrokeColor(c, 0.0, 0.0, 0.0, 1.0)
         CGContextSetLineWidth(c, self.borderWidth)
         
-        var bubblePath = CGPathCreateMutable()
+        let bubblePath = CGPathCreateMutable()
         
         if self.pointDirection == .Up {
             CGPathMoveToPoint(bubblePath, nil, self.targetPoint.x+self.sidePadding, self.targetPoint.y)
@@ -193,12 +193,12 @@ class SwiftPopTipView: UIView {
             CGContextSetFillColorWithColor(c, self.popColor.CGColor)
             CGContextFillRect(c, self.bounds)
         } else {
-            var bubbleMiddle = (bubbleRect.origin.y+(bubbleRect.size.height/2)) / self.bounds.size.height
+            let bubbleMiddle = (bubbleRect.origin.y+(bubbleRect.size.height/2)) / self.bounds.size.height
             
             var myGradient: CGGradientRef
             var myColorSpace: CGColorSpaceRef
-            var locationCount: size_t = 5
-            var locationList: [CGFloat] = [0.0, bubbleMiddle-0.03, bubbleMiddle, bubbleMiddle+0.03, 1.0]
+            let locationCount: size_t = 5
+            let locationList: [CGFloat] = [0.0, bubbleMiddle-0.03, bubbleMiddle, bubbleMiddle+0.03, 1.0]
             
             var colourHL: CGFloat = 0
             if self.highlight {
@@ -206,8 +206,8 @@ class SwiftPopTipView: UIView {
             }
             
             var red, green, blue, alpha: CGFloat
-            var numComponents: size_t = CGColorGetNumberOfComponents(self.backgroundColor!.CGColor)
-            var components = CGColorGetComponents(self.backgroundColor!.CGColor)
+            let numComponents: size_t = CGColorGetNumberOfComponents(self.backgroundColor!.CGColor)
+            let components = CGColorGetComponents(self.backgroundColor!.CGColor)
             if numComponents == 2 {
                 red = components[0]
                 green = components[0]
@@ -219,37 +219,37 @@ class SwiftPopTipView: UIView {
                 blue = components[2]
                 alpha = components[3]
             }
-            var colorList: [CGFloat] = [
+            let colorList: [CGFloat] = [
                 red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
                 red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
                 red*1.08+colourHL, green*1.08+colourHL, blue*1.08+colourHL, alpha,
                 red+colourHL, green+colourHL, blue+colourHL, alpha,
                 red+colourHL, green+colourHL, blue+colourHL, alpha
             ]
-            myColorSpace = CGColorSpaceCreateDeviceRGB()
-            myGradient = CGGradientCreateWithColorComponents(myColorSpace, colorList, locationList, locationCount)
+            myColorSpace = CGColorSpaceCreateDeviceRGB()!
+            myGradient = CGGradientCreateWithColorComponents(myColorSpace, colorList, locationList, locationCount)!
             let startPoint = CGPoint(x: 0, y: 0)
             let endPoint = CGPoint(x: 0, y: CGRectGetMaxY(self.bounds))
             
-            CGContextDrawLinearGradient(c, myGradient, startPoint, endPoint,0)
+            CGContextDrawLinearGradient(c, myGradient, startPoint, endPoint,[])
         }
         
         if self.has3DStyle {
             CGContextSaveGState(c)
-            var innerShadowPath = CGPathCreateMutable()
+            let innerShadowPath = CGPathCreateMutable()
             
             CGPathAddRect(innerShadowPath, nil, CGRectInset(CGPathGetPathBoundingBox(bubblePath), -30, -30))
             
             CGPathAddPath(innerShadowPath, nil, bubblePath)
             CGPathCloseSubpath(innerShadowPath)
             
-            var highlightColor = UIColor(white: 1, alpha: 0.75)
+            let highlightColor = UIColor(white: 1, alpha: 0.75)
             CGContextSetFillColorWithColor(c, highlightColor.CGColor)
             CGContextSetShadowWithColor(c, CGSizeMake(0, 4), 4, highlightColor.CGColor)
             CGContextAddPath(c, innerShadowPath)
             CGContextEOFillPath(c)
             
-            var shadowColor = UIColor(white: 0, alpha: 0.4)
+            let shadowColor = UIColor(white: 0, alpha: 0.4)
             CGContextSetFillColorWithColor(c, shadowColor.CGColor)
             CGContextSetShadowWithColor(c, CGSizeMake(0, -4), 4, shadowColor.CGColor)
             CGContextAddPath(c, innerShadowPath)
@@ -260,8 +260,8 @@ class SwiftPopTipView: UIView {
         CGContextRestoreGState(c)
         
         if self.borderWidth > 0 {
-            var numBorderComponents: size_t = CGColorGetNumberOfComponents(self.borderColor.CGColor)
-            var borderComponents = CGColorGetComponents(self.borderColor.CGColor)
+            let numBorderComponents: size_t = CGColorGetNumberOfComponents(self.borderColor.CGColor)
+            let borderComponents = CGColorGetComponents(self.borderColor.CGColor)
             var r, g, b, a: CGFloat
             if numBorderComponents == 2 {
                 r = borderComponents[0]
@@ -277,13 +277,13 @@ class SwiftPopTipView: UIView {
             
             CGContextSetRGBStrokeColor(c, r, g, b, a)
             CGContextAddPath(c, bubblePath)
-            CGContextDrawPath(c, kCGPathStroke)
+            CGContextDrawPath(c, CGPathDrawingMode.Stroke)
         }
         
         if let title = self.title {
             self.titleColor?.set()
-            var titleFrame = self.contentFrame()
-            var titleParagraphStyle = NSMutableParagraphStyle()
+            let titleFrame = self.contentFrame()
+            let titleParagraphStyle = NSMutableParagraphStyle()
             titleParagraphStyle.alignment = self.titleAlignment
             titleParagraphStyle.lineBreakMode = .ByClipping
             title.drawWithRect(titleFrame, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.titleFont, NSForegroundColorAttributeName: self.titleColor!, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil)
@@ -294,13 +294,13 @@ class SwiftPopTipView: UIView {
             var textFrame = self.contentFrame()
             
             if let title = self.title {
-                var titleParagraphStyle = NSMutableParagraphStyle()
+                let titleParagraphStyle = NSMutableParagraphStyle()
                 titleParagraphStyle.alignment = self.titleAlignment
                 titleParagraphStyle.lineBreakMode = .ByClipping
                 textFrame.origin.y += title.boundingRectWithSize(CGSizeMake(textFrame.size.width, 99999.0), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.titleFont, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil).size.height
             }
             
-            var textParagraphStyle = NSMutableParagraphStyle()
+            let textParagraphStyle = NSMutableParagraphStyle()
             textParagraphStyle.alignment = self.textAlignment
             textParagraphStyle.lineBreakMode = .ByWordWrapping
 
@@ -309,7 +309,7 @@ class SwiftPopTipView: UIView {
     }
     
     func presentPointingAtBarButtonItem(barButtonItem: UIBarButtonItem, animated: Bool) {
-        var targetView = barButtonItem.valueForKey("view") as UIView
+        var targetView = barButtonItem.valueForKey("view") as! UIView
         var targetSuperview = targetView.superview
         var containerView: UIView?
         if targetSuperview!.dynamicType === UINavigationBar.self {
@@ -340,7 +340,7 @@ class SwiftPopTipView: UIView {
         }
         
         if self.dismissTapAnywhere {
-            self.dismissTarget = UIButton.buttonWithType(.Custom) as? UIButton
+            self.dismissTarget = UIButton(type: .Custom) as? UIButton
             self.dismissTarget?.addTarget(self, action: "dismissTapAnywhereFired:", forControlEvents: .TouchUpInside)
             self.dismissTarget?.setTitle("", forState: .Normal)
             self.dismissTarget?.frame = containerView.bounds
@@ -378,7 +378,7 @@ class SwiftPopTipView: UIView {
         var textSize = CGSizeZero
         
         if let message = self.message {
-            var textParagraphStyle = NSMutableParagraphStyle()
+            let textParagraphStyle = NSMutableParagraphStyle()
             textParagraphStyle.alignment = self.textAlignment
             textParagraphStyle.lineBreakMode = .ByWordWrapping
             textSize = message.boundingRectWithSize(CGSizeMake(rectWidth, 99999.0), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.textFont, NSParagraphStyleAttributeName: textParagraphStyle], context: nil).size
@@ -387,7 +387,7 @@ class SwiftPopTipView: UIView {
             textSize = customView.frame.size
         }
         if let title = self.title {
-            var titleParagraphStyle = NSMutableParagraphStyle()
+            let titleParagraphStyle = NSMutableParagraphStyle()
             titleParagraphStyle.lineBreakMode = .ByClipping
             textSize.height += title.boundingRectWithSize(CGSizeMake(rectWidth, 99999.0), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.titleFont, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil).size.height
         }
@@ -433,9 +433,9 @@ class SwiftPopTipView: UIView {
             }
         }
         
-        var W = containerView.bounds.size.width
+        let W = containerView.bounds.size.width
         
-        var p = targetView.superview!.convertPoint(targetView.center, toView:containerView)
+        let p = targetView.superview!.convertPoint(targetView.center, toView:containerView)
         var x_p = p.x
         var x_b = x_p - CGFloat(roundf(Float(self.bubbleSize.width/2)))
         if x_b < self.sidePadding {
@@ -451,7 +451,7 @@ class SwiftPopTipView: UIView {
             x_p = x_b + self.bubbleSize.width - self.cornerRadius - self.pointerSize
         }
         
-        var fullHeight = self.bubbleSize.height + self.pointerSize + 10
+        let fullHeight = self.bubbleSize.height + self.pointerSize + 10
         var y_b: CGFloat
         if self.pointDirection == .Up {
             y_b = self.topMargin + pointerY
@@ -461,7 +461,7 @@ class SwiftPopTipView: UIView {
             self.targetPoint = CGPointMake(x_p-x_b, fullHeight-2)
         }
         
-        var finalFrame = CGRectMake(x_b-self.sidePadding, y_b, self.bubbleSize.width+self.sidePadding*2, fullHeight)
+        let finalFrame = CGRectMake(x_b-self.sidePadding, y_b, self.bubbleSize.width+self.sidePadding*2, fullHeight)
         if animated {
             if self.animation == .Slide {
                 self.alpha = 0
@@ -530,13 +530,13 @@ class SwiftPopTipView: UIView {
     }
     
     func autoDismissAnimatedDidFire(theTimer: NSTimer) {
-        var animated = theTimer.userInfo?.objectForKey("animated") as Bool
+        var animated = theTimer.userInfo?.objectForKey("animated") as! Bool
         self.dismissAnimated(animated)
         self.notifyDelegatePopTipViewWasDismissedByUser()
     }
     
     func autoDismissAnimated(animated: Bool, atTimeInterval timeInvertal:NSTimeInterval) {
-        var userInfo = NSDictionary(object: true, forKey: "animated")
+        let userInfo = NSDictionary(object: true, forKey: "animated")
         self.autoDismissTimer = NSTimer.scheduledTimerWithTimeInterval(timeInvertal, target: self, selector: "autoDismissAnimatedDidFire:", userInfo: userInfo, repeats: false)
     }
     
@@ -544,9 +544,17 @@ class SwiftPopTipView: UIView {
         self.delegate?.popTipViewWasDismissedByUser(self)
     }
     
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+//    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+//        if self.disableTapToDismiss {
+//            super.touchesBegan(touches as! Set<UITouch>, withEvent: event)
+//            return
+//        }
+//        self.dismissByUser()
+//    }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if self.disableTapToDismiss {
-            super.touchesBegan(touches, withEvent: event)
+            super.touchesBegan(touches as! Set<UITouch>, withEvent: event)
             return
         }
         self.dismissByUser()

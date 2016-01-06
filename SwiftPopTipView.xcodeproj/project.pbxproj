@@ -159,6 +159,8 @@
 		4780D00F1A43A03100E43757 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0720;
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Mihael Isaev inc.";
 				TargetAttributes = {
@@ -411,6 +413,7 @@
 				4780D0381A43A03100E43757 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4780D0391A43A03100E43757 /* Build configuration list for PBXNativeTarget "SwiftPopTipViewTests" */ = {
 			isa = XCConfigurationList;
@@ -419,6 +422,7 @@
 				4780D03B1A43A03100E43757 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
