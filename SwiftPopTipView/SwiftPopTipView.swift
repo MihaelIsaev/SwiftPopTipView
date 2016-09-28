@@ -10,17 +10,17 @@ import Foundation
 import UIKit
 
 enum PointDirection: Int {
-    case Any = 0
-    case Up, Down
+    case any = 0
+    case up, down
 }
 
 enum SwiftPopTipAnimation: Int {
-    case Slide = 0
-    case Pop
+    case slide = 0
+    case pop
 }
 
 protocol SwiftPopTipViewDelegate {
-    func popTipViewWasDismissedByUser(popTipView:SwiftPopTipView)
+    func popTipViewWasDismissedByUser(_ popTipView:SwiftPopTipView)
 }
 
 class SwiftPopTipView: UIView {
@@ -28,19 +28,19 @@ class SwiftPopTipView: UIView {
     var disableTapToDismiss = false
     var dismissTapAnywhere = true
     var isShowing = false
-    var title: NSString?
-    var message: NSString?
+    var title: String?
+    var message: String?
     var customView: UIView?
-    var targetObject: AnyObject?
-    var popColor = UIColor.whiteColor()
+    var targetObject: Any?
+    var popColor = UIColor.white
     var titleColor: UIColor?
-    var titleFont = UIFont.boldSystemFontOfSize(16)
-    var textColor = UIColor.blackColor()
-    var textFont = UIFont.boldSystemFontOfSize(14)
-    var titleAlignment: NSTextAlignment = .Center
-    var textAlignment: NSTextAlignment = .Center
+    var titleFont = UIFont.boldSystemFont(ofSize: 16)
+    var textColor = UIColor.black
+    var textFont = UIFont.boldSystemFont(ofSize: 14)
+    var titleAlignment: NSTextAlignment = .center
+    var textAlignment: NSTextAlignment = .center
     var has3DStyle = false
-    var borderColor = UIColor.blackColor()
+    var borderColor = UIColor.black
     var cornerRadius: CGFloat = 10
     var borderWidth: CGFloat = 0.1
     var highlight = false
@@ -51,175 +51,174 @@ class SwiftPopTipView: UIView {
         set {
             self.hasShadow = newValue
             if newValue {
-                self.layer.shadowOffset = CGSizeMake(0, 3)
-                self.layer.shadowRadius = 2
-                self.layer.shadowColor = UIColor.blackColor().CGColor
-                self.layer.shadowOpacity = 0.3
+                layer.shadowOffset = CGSize(width: 0, height: 3)
+                layer.shadowRadius = 2
+                layer.shadowColor = UIColor.black.cgColor
+                layer.shadowOpacity = 0.3
             } else {
-                self.layer.shadowOpacity = 0.0
+                layer.shadowOpacity = 0.0
             }
         }
     }
-    var animation: SwiftPopTipAnimation = .Slide
+    var animation: SwiftPopTipAnimation = .slide
     var maxWidth: CGFloat?
-    var preferredPointDirection: PointDirection = .Any
-    var pointDirection: PointDirection = .Any
+    var preferredPointDirection: PointDirection = .any
+    var pointDirection: PointDirection = .any
     var hasGradientBackground = false
     var sidePadding: CGFloat = 2
     var topMargin: CGFloat = 2
     var pointerSize: CGFloat = 12
-    var bubbleSize: CGSize = CGSizeZero
-    var targetPoint: CGPoint = CGPointZero
-    var autoDismissTimer: NSTimer?
+    var bubbleSize: CGSize = CGSize.zero
+    var targetPoint: CGPoint = CGPoint.zero
+    var autoDismissTimer: Timer?
     var dismissTarget: UIButton?
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.opaque = false
-        self.backgroundColor = UIColor.clearColor()
+        isOpaque = false
+        backgroundColor = UIColor.clear
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.opaque = false
-        self.backgroundColor = UIColor.clearColor()
+        isOpaque = false
+        backgroundColor = UIColor.clear
+    }
+    
+    required init () {
+        super.init(frame: CGRect.zero)
+        backgroundColor = UIColor.clear
+        titleFont = UIFont.boldSystemFont(ofSize: 16)
+        titleColor = UIColor.black
+        titleAlignment = .center
+        textFont = UIFont.systemFont(ofSize: 14)
+        textColor = UIColor.black
     }
     
     init(title: String? = nil, message: String? = nil, customView: UIView? = nil) {
-        super.init(frame: CGRectZero)
+        super.init(frame: CGRect.zero)
         self.title = title
         self.message = message
         
-        self.backgroundColor = UIColor.clearColor()
-        self.titleFont = UIFont.boldSystemFontOfSize(16)
-        self.titleColor = UIColor.blackColor()
-        self.titleAlignment = .Center
-        self.textFont = UIFont.systemFontOfSize(14)
-        self.textColor = UIColor.blackColor()
+        backgroundColor = UIColor.clear
+        titleFont = UIFont.boldSystemFont(ofSize: 16)
+        titleColor = UIColor.black
+        titleAlignment = .center
+        textFont = UIFont.systemFont(ofSize: 14)
+        textColor = UIColor.black
         if let aView = customView {
             self.customView = aView
-            self.addSubview(self.customView!)
+            addSubview(customView!)
         }
     }
     
     func bubbleFrame() -> CGRect {
         var bubbleFrame: CGRect
-        if self.pointDirection == .Up {
-            bubbleFrame = CGRectMake(self.sidePadding, self.targetPoint.y+self.pointerSize, self.bubbleSize.width, self.bubbleSize.height);
-        }
-        else {
-            bubbleFrame = CGRectMake(self.sidePadding, self.targetPoint.y-self.pointerSize-self.bubbleSize.height, self.bubbleSize.width, self.bubbleSize.height);
+        if pointDirection == .up {
+            bubbleFrame = CGRect(x: sidePadding, y: targetPoint.y+pointerSize, width: bubbleSize.width, height: bubbleSize.height);
+        } else {
+            bubbleFrame = CGRect(x: sidePadding, y: targetPoint.y-pointerSize-bubbleSize.height, width: bubbleSize.width, height: bubbleSize.height);
         }
         return bubbleFrame
     }
     
     func contentFrame() -> CGRect {
-        var bubbleFrame = self.bubbleFrame()
-        var contentFrame = CGRectMake(bubbleFrame.origin.x + self.cornerRadius,
-            bubbleFrame.origin.y + self.cornerRadius,
-            bubbleFrame.size.width - self.cornerRadius*2,
-            bubbleFrame.size.height - self.cornerRadius*2)
+        let customBubbleFrame = bubbleFrame()
+        let contentFrame = CGRect(x: customBubbleFrame.origin.x + cornerRadius,
+                                  y: customBubbleFrame.origin.y + cornerRadius,
+                                  width: customBubbleFrame.size.width - cornerRadius*2,
+                                  height: customBubbleFrame.size.height - cornerRadius*2)
         return contentFrame
     }
     
     override func layoutSubviews() {
-        if let customView = self.customView {
-            var contentFrame = self.contentFrame()
-            customView.frame = contentFrame
+        if let customView = customView {
+            let customContentFrame = contentFrame()
+            customView.frame = customContentFrame
         }
     }
     
-    override func drawRect(rect: CGRect) {
-        var bubbleRect = self.bubbleFrame()
+    override func draw(_ rect: CGRect) {
+        let bubbleRect = bubbleFrame()
         
-        var c = UIGraphicsGetCurrentContext()
+        let c = UIGraphicsGetCurrentContext()
         
-        CGContextSetRGBStrokeColor(c, 0.0, 0.0, 0.0, 1.0)
-        CGContextSetLineWidth(c, self.borderWidth)
+        c?.setStrokeColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        c?.setLineWidth(borderWidth)
         
-        var bubblePath = CGPathCreateMutable()
+        let bubblePath = CGMutablePath()
         
-        if self.pointDirection == .Up {
-            CGPathMoveToPoint(bubblePath, nil, self.targetPoint.x+self.sidePadding, self.targetPoint.y)
-            CGPathAddLineToPoint(bubblePath, nil, self.targetPoint.x+self.sidePadding+self.pointerSize, self.targetPoint.y+self.pointerSize)
-            
-            CGPathAddArcToPoint(bubblePath, nil,
-                bubbleRect.origin.x+bubbleRect.size.width, bubbleRect.origin.y,
-                bubbleRect.origin.x+bubbleRect.size.width, bubbleRect.origin.y+self.cornerRadius,
-                self.cornerRadius)
-            CGPathAddArcToPoint(bubblePath, nil,
-                bubbleRect.origin.x+bubbleRect.size.width, bubbleRect.origin.y+bubbleRect.size.height,
-                bubbleRect.origin.x+bubbleRect.size.width-self.cornerRadius, bubbleRect.origin.y+bubbleRect.size.height,
-                self.cornerRadius)
-            CGPathAddArcToPoint(bubblePath, nil,
-                bubbleRect.origin.x, bubbleRect.origin.y+bubbleRect.size.height,
-                bubbleRect.origin.x, bubbleRect.origin.y+bubbleRect.size.height-self.cornerRadius,
-                self.cornerRadius)
-            CGPathAddArcToPoint(bubblePath, nil,
-                bubbleRect.origin.x, bubbleRect.origin.y,
-                bubbleRect.origin.x+self.cornerRadius, bubbleRect.origin.y,
-                self.cornerRadius)
-            CGPathAddLineToPoint(bubblePath, nil, self.targetPoint.x+self.sidePadding-self.pointerSize, self.targetPoint.y+self.pointerSize)
+        if pointDirection == .up {
+            bubblePath.move(to: CGPoint(x: targetPoint.x+sidePadding, y: targetPoint.y))
+            bubblePath.addLine(to: CGPoint(x: targetPoint.x+sidePadding+pointerSize, y: targetPoint.y+pointerSize))
+            bubblePath.addArc(tangent1End: CGPoint(x: bubbleRect.origin.x+bubbleRect.size.width, y: bubbleRect.origin.y),
+                              tangent2End: CGPoint(x: bubbleRect.origin.x+bubbleRect.size.width, y: bubbleRect.origin.y+cornerRadius),
+                              radius: cornerRadius)
+            bubblePath.addArc(tangent1End: CGPoint(x: bubbleRect.origin.x+bubbleRect.size.width, y: bubbleRect.origin.y+bubbleRect.size.height),
+                              tangent2End: CGPoint(x: bubbleRect.origin.x+bubbleRect.size.width-cornerRadius, y: bubbleRect.origin.y+bubbleRect.size.height),
+                              radius: cornerRadius)
+            bubblePath.addArc(tangent1End: CGPoint(x: bubbleRect.origin.x, y: bubbleRect.origin.y+bubbleRect.size.height),
+                              tangent2End: CGPoint(x: bubbleRect.origin.x, y: bubbleRect.origin.y+bubbleRect.size.height-cornerRadius),
+                              radius: cornerRadius)
+            bubblePath.addArc(tangent1End: CGPoint(x: bubbleRect.origin.x, y: bubbleRect.origin.y),
+                              tangent2End: CGPoint(x: bubbleRect.origin.x+cornerRadius, y: bubbleRect.origin.y),
+                              radius: cornerRadius)
+            bubblePath.addLine(to: CGPoint(x: targetPoint.x+sidePadding-pointerSize, y: targetPoint.y+pointerSize))
         } else {
-            CGPathMoveToPoint(bubblePath, nil, self.targetPoint.x+self.sidePadding, self.targetPoint.y)
-            CGPathAddLineToPoint(bubblePath, nil, self.targetPoint.x+self.sidePadding-self.pointerSize, self.targetPoint.y-self.pointerSize)
-            
-            CGPathAddArcToPoint(bubblePath, nil,
-                bubbleRect.origin.x, bubbleRect.origin.y+bubbleRect.size.height,
-                bubbleRect.origin.x, bubbleRect.origin.y+bubbleRect.size.height-self.cornerRadius,
-                self.cornerRadius)
-            CGPathAddArcToPoint(bubblePath, nil,
-                bubbleRect.origin.x, bubbleRect.origin.y,
-                bubbleRect.origin.x+self.cornerRadius, bubbleRect.origin.y,
-                self.cornerRadius)
-            CGPathAddArcToPoint(bubblePath, nil,
-                bubbleRect.origin.x+bubbleRect.size.width, bubbleRect.origin.y,
-                bubbleRect.origin.x+bubbleRect.size.width, bubbleRect.origin.y+self.cornerRadius,
-                self.cornerRadius)
-            CGPathAddArcToPoint(bubblePath, nil,
-                bubbleRect.origin.x+bubbleRect.size.width, bubbleRect.origin.y+bubbleRect.size.height,
-                bubbleRect.origin.x+bubbleRect.size.width-self.cornerRadius, bubbleRect.origin.y+bubbleRect.size.height,
-                self.cornerRadius)
-            CGPathAddLineToPoint(bubblePath, nil, self.targetPoint.x+self.sidePadding+self.pointerSize, self.targetPoint.y-self.pointerSize)
+            bubblePath.move(to: CGPoint(x: targetPoint.x+sidePadding, y: targetPoint.y))
+            bubblePath.addLine(to: CGPoint(x: targetPoint.x+sidePadding-pointerSize, y: targetPoint.y-pointerSize))
+            bubblePath.addArc(tangent1End: CGPoint(x: bubbleRect.origin.x, y: bubbleRect.origin.y+bubbleRect.size.height),
+                              tangent2End: CGPoint(x: bubbleRect.origin.x, y: bubbleRect.origin.y+bubbleRect.size.height-cornerRadius),
+                              radius: cornerRadius)
+            bubblePath.addArc(tangent1End: CGPoint(x: bubbleRect.origin.x, y: bubbleRect.origin.y),
+                              tangent2End: CGPoint(x: bubbleRect.origin.x+cornerRadius, y: bubbleRect.origin.y),
+                              radius: cornerRadius)
+            bubblePath.addArc(tangent1End: CGPoint(x: bubbleRect.origin.x+bubbleRect.size.width, y: bubbleRect.origin.y),
+                              tangent2End: CGPoint(x: bubbleRect.origin.x+bubbleRect.size.width, y: bubbleRect.origin.y+cornerRadius),
+                              radius: cornerRadius)
+            bubblePath.addArc(tangent1End: CGPoint(x: bubbleRect.origin.x+bubbleRect.size.width, y: bubbleRect.origin.y+bubbleRect.size.height),
+                              tangent2End: CGPoint(x: bubbleRect.origin.x+bubbleRect.size.width-cornerRadius, y: bubbleRect.origin.y+bubbleRect.size.height),
+                              radius: cornerRadius)
+            bubblePath.addLine(to: CGPoint(x: targetPoint.x+sidePadding+pointerSize, y: targetPoint.y-pointerSize))
         }
         
-        CGPathCloseSubpath(bubblePath)
+        bubblePath.closeSubpath()
         
-        CGContextSaveGState(c)
-        CGContextAddPath(c, bubblePath)
-        CGContextClip(c)
+        c?.saveGState()
+        c?.addPath(bubblePath)
+        c?.clip()
         
-        if !self.hasGradientBackground {
-            CGContextSetFillColorWithColor(c, self.popColor.CGColor)
-            CGContextFillRect(c, self.bounds)
+        if !hasGradientBackground {
+            c?.setFillColor(popColor.cgColor)
+            c?.fill(bounds)
         } else {
-            var bubbleMiddle = (bubbleRect.origin.y+(bubbleRect.size.height/2)) / self.bounds.size.height
+            let bubbleMiddle = (bubbleRect.origin.y+(bubbleRect.size.height/2)) / bounds.size.height
             
-            var myGradient: CGGradientRef
-            var myColorSpace: CGColorSpaceRef
-            var locationCount: size_t = 5
-            var locationList: [CGFloat] = [0.0, bubbleMiddle-0.03, bubbleMiddle, bubbleMiddle+0.03, 1.0]
+            var myGradient: CGGradient
+            var myColorSpace: CGColorSpace
+            let locationCount: size_t = 5
+            let locationList: [CGFloat] = [0.0, bubbleMiddle-0.03, bubbleMiddle, bubbleMiddle+0.03, 1.0]
             
             var colourHL: CGFloat = 0
-            if self.highlight {
+            if highlight {
                 colourHL = 0.25
             }
             
             var red, green, blue, alpha: CGFloat
-            var numComponents: size_t = CGColorGetNumberOfComponents(self.backgroundColor!.CGColor)
-            var components = CGColorGetComponents(self.backgroundColor!.CGColor)
+            let numComponents: size_t = backgroundColor!.cgColor.numberOfComponents
+            let components = backgroundColor!.cgColor.components
             if numComponents == 2 {
-                red = components[0]
-                green = components[0]
-                blue = components[0]
-                alpha = components[1]
+                red = (components?[0])!
+                green = (components?[0])!
+                blue = (components?[0])!
+                alpha = (components?[1])!
             } else {
-                red = components[0]
-                green = components[1]
-                blue = components[2]
-                alpha = components[3]
+                red = (components?[0])!
+                green = (components?[1])!
+                blue = (components?[2])!
+                alpha = (components?[3])!
             }
-            var colorList: [CGFloat] = [
+            let colorList: [CGFloat] = [
                 red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
                 red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
                 red*1.08+colourHL, green*1.08+colourHL, blue*1.08+colourHL, alpha,
@@ -227,124 +226,122 @@ class SwiftPopTipView: UIView {
                 red+colourHL, green+colourHL, blue+colourHL, alpha
             ]
             myColorSpace = CGColorSpaceCreateDeviceRGB()
-            myGradient = CGGradientCreateWithColorComponents(myColorSpace, colorList, locationList, locationCount)
+            myGradient = CGGradient(colorSpace: myColorSpace, colorComponents: colorList, locations: locationList, count: locationCount)!
             let startPoint = CGPoint(x: 0, y: 0)
-            let endPoint = CGPoint(x: 0, y: CGRectGetMaxY(self.bounds))
+            let endPoint = CGPoint(x: 0, y: bounds.maxY)
             
-            CGContextDrawLinearGradient(c, myGradient, startPoint, endPoint,0)
+            c?.drawLinearGradient(myGradient, start: startPoint, end: endPoint, options: CGGradientDrawingOptions(rawValue: 0))
         }
         
-        if self.has3DStyle {
-            CGContextSaveGState(c)
-            var innerShadowPath = CGPathCreateMutable()
+        if has3DStyle {
+            c?.saveGState()
+            let innerShadowPath = CGMutablePath()
+            innerShadowPath.addRect(bubblePath.boundingBoxOfPath.insetBy(dx: -30, dy: -30))
+            innerShadowPath.addPath(bubblePath)
+            innerShadowPath.closeSubpath()
             
-            CGPathAddRect(innerShadowPath, nil, CGRectInset(CGPathGetPathBoundingBox(bubblePath), -30, -30))
+            let highlightColor = UIColor(white: 1, alpha: 0.75)
+            c?.setFillColor(highlightColor.cgColor)
+            c?.setShadow(offset: CGSize(width: 0, height: 4), blur: 4, color: highlightColor.cgColor)
+            c?.addPath(innerShadowPath)
+            c?.fillPath()
             
-            CGPathAddPath(innerShadowPath, nil, bubblePath)
-            CGPathCloseSubpath(innerShadowPath)
-            
-            var highlightColor = UIColor(white: 1, alpha: 0.75)
-            CGContextSetFillColorWithColor(c, highlightColor.CGColor)
-            CGContextSetShadowWithColor(c, CGSizeMake(0, 4), 4, highlightColor.CGColor)
-            CGContextAddPath(c, innerShadowPath)
-            CGContextEOFillPath(c)
-            
-            var shadowColor = UIColor(white: 0, alpha: 0.4)
-            CGContextSetFillColorWithColor(c, shadowColor.CGColor)
-            CGContextSetShadowWithColor(c, CGSizeMake(0, -4), 4, shadowColor.CGColor)
-            CGContextAddPath(c, innerShadowPath)
-            CGContextEOFillPath(c)
-            CGContextRestoreGState(c)
+            let shadowColor = UIColor(white: 0, alpha: 0.4)
+            c?.setFillColor(shadowColor.cgColor)
+            c?.setShadow(offset: CGSize(width: 0, height: -4), blur: 4, color: shadowColor.cgColor)
+            c?.addPath(innerShadowPath)
+            c?.fillPath()
+            c?.restoreGState()
         }
         
-        CGContextRestoreGState(c)
+        c?.restoreGState()
         
-        if self.borderWidth > 0 {
-            var numBorderComponents: size_t = CGColorGetNumberOfComponents(self.borderColor.CGColor)
-            var borderComponents = CGColorGetComponents(self.borderColor.CGColor)
+        if borderWidth > 0 {
+            let numBorderComponents: size_t = borderColor.cgColor.numberOfComponents
+            let borderComponents = borderColor.cgColor.components
             var r, g, b, a: CGFloat
             if numBorderComponents == 2 {
-                r = borderComponents[0]
-                g = borderComponents[0]
-                b = borderComponents[0]
-                a = borderComponents[1]
+                r = (borderComponents?[0])!
+                g = (borderComponents?[0])!
+                b = (borderComponents?[0])!
+                a = (borderComponents?[1])!
             } else {
-                r = borderComponents[0]
-                g = borderComponents[1]
-                b = borderComponents[2]
-                a = borderComponents[3]
+                r = (borderComponents?[0])!
+                g = (borderComponents?[1])!
+                b = (borderComponents?[2])!
+                a = (borderComponents?[3])!
             }
             
-            CGContextSetRGBStrokeColor(c, r, g, b, a)
-            CGContextAddPath(c, bubblePath)
-            CGContextDrawPath(c, kCGPathStroke)
+            c?.setStrokeColor(red: r, green: g, blue: b, alpha: a)
+            c?.addPath(bubblePath)
+            c?.drawPath(using: CGPathDrawingMode.stroke)
         }
         
-        if let title = self.title {
-            self.titleColor?.set()
-            var titleFrame = self.contentFrame()
-            var titleParagraphStyle = NSMutableParagraphStyle()
-            titleParagraphStyle.alignment = self.titleAlignment
-            titleParagraphStyle.lineBreakMode = .ByClipping
-            title.drawWithRect(titleFrame, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.titleFont, NSForegroundColorAttributeName: self.titleColor!, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil)
+        if let title = title {
+            titleColor?.set()
+            let titleFrame = contentFrame()
+            let titleParagraphStyle = NSMutableParagraphStyle()
+            titleParagraphStyle.alignment = titleAlignment
+            titleParagraphStyle.lineBreakMode = .byClipping
+            title.draw(with: titleFrame, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: titleFont, NSForegroundColorAttributeName: titleColor!, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil)
         }
         
-        if let message = self.message {
-            self.textColor.set()
-            var textFrame = self.contentFrame()
+        if let message = message {
+            textColor.set()
+            var textFrame = contentFrame()
             
-            if let title = self.title {
-                var titleParagraphStyle = NSMutableParagraphStyle()
-                titleParagraphStyle.alignment = self.titleAlignment
-                titleParagraphStyle.lineBreakMode = .ByClipping
-                textFrame.origin.y += title.boundingRectWithSize(CGSizeMake(textFrame.size.width, 99999.0), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.titleFont, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil).size.height
+            if let title = title {
+                let titleParagraphStyle = NSMutableParagraphStyle()
+                titleParagraphStyle.alignment = titleAlignment
+                titleParagraphStyle.lineBreakMode = .byClipping
+                textFrame.origin.y += title.boundingRect(with: CGSize(width: textFrame.size.width, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: titleFont, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil).size.height
             }
             
-            var textParagraphStyle = NSMutableParagraphStyle()
-            textParagraphStyle.alignment = self.textAlignment
-            textParagraphStyle.lineBreakMode = .ByWordWrapping
-
-            message.drawWithRect(textFrame, options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.textFont, NSParagraphStyleAttributeName: textParagraphStyle, NSForegroundColorAttributeName: self.textColor], context: nil)
+            let textParagraphStyle = NSMutableParagraphStyle()
+            textParagraphStyle.alignment = textAlignment
+            textParagraphStyle.lineBreakMode = .byWordWrapping
+            
+            message.draw(with: textFrame, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: textFont, NSParagraphStyleAttributeName: textParagraphStyle, NSForegroundColorAttributeName: textColor], context: nil)
         }
     }
     
-    func presentPointingAtBarButtonItem(barButtonItem: UIBarButtonItem, animated: Bool) {
-        var targetView = barButtonItem.valueForKey("view") as UIView
-        var targetSuperview = targetView.superview
+    func presentPointingAtBarButtonItem(_ barButtonItem: UIBarButtonItem, animated: Bool) {
+        let targetView = barButtonItem.value(forKey: "view") as! UIView
+        let targetSuperview = targetView.superview
         var containerView: UIView?
-        if targetSuperview!.dynamicType === UINavigationBar.self {
-            containerView = UIApplication.sharedApplication().keyWindow
-        } else if targetSuperview!.dynamicType === UIToolbar.self {
+        if type(of: targetSuperview!) === UINavigationBar.self {
+            containerView = UIApplication.shared.keyWindow
+        } else if type(of: targetSuperview!) === UIToolbar.self {
             containerView = targetSuperview?.superview
         }
         containerView = targetSuperview?.superview
         
         if containerView == nil {
             NSLog("Cannot determine container view from UIBarButtonItem: %@", barButtonItem);
-            self.targetObject = nil
+            targetObject = nil
             return
         }
         
-        self.targetObject = barButtonItem
+        targetObject = barButtonItem
         
         self.presentPointingAtView(targetView, containerView: containerView!, animated: animated)
     }
     
-    func presentPointingAtView(targetView: UIView, containerView: UIView, animated: Bool) {
-        if self.isShowing {
+    func presentPointingAtView(_ targetView: UIView, containerView: UIView, animated: Bool) {
+        if isShowing {
             return
         }
-        self.isShowing = true
-        if self.targetObject == nil {
-            self.targetObject = targetView
+        isShowing = true
+        if targetObject == nil {
+            targetObject = targetView
         }
         
-        if self.dismissTapAnywhere {
-            self.dismissTarget = UIButton.buttonWithType(.Custom) as? UIButton
-            self.dismissTarget?.addTarget(self, action: "dismissTapAnywhereFired:", forControlEvents: .TouchUpInside)
-            self.dismissTarget?.setTitle("", forState: .Normal)
-            self.dismissTarget?.frame = containerView.bounds
-            if let dismissTarget = self.dismissTarget {
+        if dismissTapAnywhere {
+            dismissTarget = UIButton(type: .custom)
+            dismissTarget?.addTarget(self, action: #selector(dismissTapAnywhereFired(_:)), for: .touchUpInside)
+            dismissTarget?.setTitle("", for: UIControlState())
+            dismissTarget?.frame = containerView.bounds
+            if let dismissTarget = dismissTarget {
                 containerView.addSubview(dismissTarget)
             }
         }
@@ -353,8 +350,8 @@ class SwiftPopTipView: UIView {
         
         var rectWidth: CGFloat
         
-        if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
-            if let maxWidth = self.maxWidth {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            if let maxWidth = maxWidth {
                 if maxWidth < containerView.frame.size.width {
                     rectWidth = maxWidth
                 } else {
@@ -364,7 +361,7 @@ class SwiftPopTipView: UIView {
                 rectWidth = containerView.frame.size.width/3
             }
         } else {
-            if let maxWidth = self.maxWidth {
+            if let maxWidth = maxWidth {
                 if maxWidth < containerView.frame.size.width {
                     rectWidth = maxWidth
                 } else {
@@ -375,57 +372,57 @@ class SwiftPopTipView: UIView {
             }
         }
         
-        var textSize = CGSizeZero
+        var textSize = CGSize.zero
         
-        if let message = self.message {
-            var textParagraphStyle = NSMutableParagraphStyle()
-            textParagraphStyle.alignment = self.textAlignment
-            textParagraphStyle.lineBreakMode = .ByWordWrapping
-            textSize = message.boundingRectWithSize(CGSizeMake(rectWidth, 99999.0), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.textFont, NSParagraphStyleAttributeName: textParagraphStyle], context: nil).size
+        if let message = message {
+            let textParagraphStyle = NSMutableParagraphStyle()
+            textParagraphStyle.alignment = textAlignment
+            textParagraphStyle.lineBreakMode = .byWordWrapping
+            textSize = message.boundingRect(with: CGSize(width: rectWidth, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: textFont, NSParagraphStyleAttributeName: textParagraphStyle], context: nil).size
         }
-        if let customView = self.customView {
+        if let customView = customView {
             textSize = customView.frame.size
         }
-        if let title = self.title {
-            var titleParagraphStyle = NSMutableParagraphStyle()
-            titleParagraphStyle.lineBreakMode = .ByClipping
-            textSize.height += title.boundingRectWithSize(CGSizeMake(rectWidth, 99999.0), options: .UsesLineFragmentOrigin, attributes: [NSFontAttributeName: self.titleFont, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil).size.height
+        if let title = title {
+            let titleParagraphStyle = NSMutableParagraphStyle()
+            titleParagraphStyle.lineBreakMode = .byClipping
+            textSize.height += title.boundingRect(with: CGSize(width: rectWidth, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: titleFont, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil).size.height
         }
         
-        self.bubbleSize = CGSizeMake(textSize.width + self.cornerRadius*2, textSize.height + self.cornerRadius*2)
+        bubbleSize = CGSize(width: textSize.width + cornerRadius*2, height: textSize.height + cornerRadius*2)
         
         var superview = containerView.superview
         
-        if superview?.dynamicType === UIWindow.self {
+        if let sv = superview, type(of: sv) === UIWindow.self {
             superview = containerView
         }
         
-        let targetRelativeOrigin = targetView.superview!.convertPoint(targetView.frame.origin, toView:superview)
-        let containerRelativeOrigin = superview!.convertPoint(containerView.frame.origin, toView:superview)
+        let targetRelativeOrigin = targetView.superview!.convert(targetView.frame.origin, to:superview)
+        let containerRelativeOrigin = superview!.convert(containerView.frame.origin, to:superview)
         
         var pointerY: CGFloat
         
         
         if targetRelativeOrigin.y+targetView.bounds.size.height < containerRelativeOrigin.y {
             pointerY = 0
-            self.pointDirection = .Up
+            pointDirection = .up
         } else if targetRelativeOrigin.y > containerRelativeOrigin.y+containerView.bounds.size.height {
             pointerY = containerView.bounds.size.height
-            self.pointDirection = .Down
+            pointDirection = .down
         } else {
-            self.pointDirection = self.preferredPointDirection
-            let targetOriginInContainer = targetView.convertPoint(CGPointMake(0.0, 0.0), toView:containerView)
+            pointDirection = preferredPointDirection
+            let targetOriginInContainer = targetView.convert(CGPoint(x: 0.0, y: 0.0), to:containerView)
             let sizeBelow = containerView.bounds.size.height - targetOriginInContainer.y
-            if self.pointDirection == .Any {
+            if pointDirection == .any {
                 if sizeBelow > targetOriginInContainer.y {
                     pointerY = targetOriginInContainer.y + targetView.bounds.size.height
-                    self.pointDirection = .Up
+                    pointDirection = .up
                 } else {
                     pointerY = targetOriginInContainer.y
-                    self.pointDirection = .Down
+                    pointDirection = .down
                 }
             } else {
-                if self.pointDirection == .Down {
+                if pointDirection == .down {
                     pointerY = targetOriginInContainer.y
                 } else {
                     pointerY = targetOriginInContainer.y + targetView.bounds.size.height
@@ -433,150 +430,149 @@ class SwiftPopTipView: UIView {
             }
         }
         
-        var W = containerView.bounds.size.width
+        let W = containerView.bounds.size.width
         
-        var p = targetView.superview!.convertPoint(targetView.center, toView:containerView)
+        let p = targetView.superview!.convert(targetView.center, to:containerView)
         var x_p = p.x
-        var x_b = x_p - CGFloat(roundf(Float(self.bubbleSize.width/2)))
-        if x_b < self.sidePadding {
-            x_b = self.sidePadding
+        var x_b = x_p - CGFloat(roundf(Float(bubbleSize.width/2)))
+        if x_b < sidePadding {
+            x_b = sidePadding
         }
-        if x_b + self.bubbleSize.width + self.sidePadding > W {
-            x_b = W - self.bubbleSize.width - self.sidePadding
+        if x_b + bubbleSize.width + sidePadding > W {
+            x_b = W - bubbleSize.width - sidePadding
         }
-        if x_p - self.pointerSize < x_b + self.cornerRadius {
-            x_p = x_b + self.cornerRadius + self.pointerSize
+        if x_p - pointerSize < x_b + cornerRadius {
+            x_p = x_b + cornerRadius + pointerSize
         }
-        if x_p + self.pointerSize > x_b + self.bubbleSize.width - self.cornerRadius {
-            x_p = x_b + self.bubbleSize.width - self.cornerRadius - self.pointerSize
+        if x_p + pointerSize > x_b + bubbleSize.width - cornerRadius {
+            x_p = x_b + bubbleSize.width - cornerRadius - pointerSize
         }
         
-        var fullHeight = self.bubbleSize.height + self.pointerSize + 10
+        let fullHeight = bubbleSize.height + pointerSize + 10
         var y_b: CGFloat
-        if self.pointDirection == .Up {
-            y_b = self.topMargin + pointerY
-            self.targetPoint = CGPointMake(x_p-x_b, 0)
+        if pointDirection == .up {
+            y_b = topMargin + pointerY
+            targetPoint = CGPoint(x: x_p-x_b, y: 0)
         } else {
             y_b = pointerY - fullHeight
-            self.targetPoint = CGPointMake(x_p-x_b, fullHeight-2)
+            targetPoint = CGPoint(x: x_p-x_b, y: fullHeight-2)
         }
         
-        var finalFrame = CGRectMake(x_b-self.sidePadding, y_b, self.bubbleSize.width+self.sidePadding*2, fullHeight)
+        let finalFrame = CGRect(x: x_b-sidePadding, y: y_b, width: bubbleSize.width+sidePadding*2, height: fullHeight)
         if animated {
-            if self.animation == .Slide {
-                self.alpha = 0
+            if animation == .slide {
+                alpha = 0
                 var startFrame = finalFrame
                 startFrame.origin.y += 10
-                self.frame = startFrame
-            } else if self.animation == .Pop {
-                self.frame = finalFrame
-                self.alpha = 0.5
+                frame = startFrame
+            } else if animation == .pop {
+                frame = finalFrame
+                alpha = 0.5
                 
-                self.transform = CGAffineTransformMakeScale(0.75, 0.75)
+                transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
                 
                 UIView.beginAnimations(nil, context: nil)
                 UIView.setAnimationDelegate(self)
-                UIView.setAnimationDidStopSelector("popAnimationDidStop:finished:context:")
+                UIView.setAnimationDidStop(#selector(popAnimationDidStop(_:finished:context:)))
                 UIView.setAnimationDuration(0.15)
-                self.transform = CGAffineTransformMakeScale(1.1, 1.1)
-                self.alpha = 1
+                transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                alpha = 1
                 UIView.commitAnimations()
             }
             
-            self.setNeedsDisplay()
+            setNeedsDisplay()
             
-            if self.animation == .Slide {
+            if animation == .slide {
                 UIView.beginAnimations(nil, context: nil)
-                self.alpha = 1
-                self.frame = finalFrame
+                alpha = 1
+                frame = finalFrame
                 UIView.commitAnimations()
             }
         } else {
-            self.setNeedsDisplay()
-            self.frame = finalFrame
+            setNeedsDisplay()
+            frame = finalFrame
         }
     }
     
     func finaliseDismiss() {
-        self.autoDismissTimer?.invalidate()
-        self.autoDismissTimer = nil
+        autoDismissTimer?.invalidate()
+        autoDismissTimer = nil
         
-        if let dismissTarget = self.dismissTarget {
+        if let dismissTarget = dismissTarget {
             dismissTarget.removeFromSuperview()
             self.dismissTarget = nil
         }
         
-        self.removeFromSuperview()
+        removeFromSuperview()
         
-        self.highlight = false
-        self.targetObject = nil
+        highlight = false
+        targetObject = nil
     }
     
-    func dismissAnimated(animated: Bool) {
-        self.isShowing = false
+    func dismissAnimated(_ animated: Bool) {
+        isShowing = false
         if animated {
-            var frame = self.frame
-            frame.origin.y += 10
+            var customFrame = frame
+            customFrame.origin.y += 10
             
             UIView.beginAnimations(nil, context: nil)
-            self.alpha = 0
-            self.frame = frame
+            alpha = 0
+            frame = customFrame
             UIView.setAnimationDelegate(self)
-            UIView.setAnimationDidStopSelector("finaliseDismiss")
+            UIView.setAnimationDidStop(#selector(finaliseDismiss))
             UIView.commitAnimations()
         } else {
-            self.finaliseDismiss()
+            finaliseDismiss()
         }
     }
     
-    func autoDismissAnimatedDidFire(theTimer: NSTimer) {
-        var animated = theTimer.userInfo?.objectForKey("animated") as Bool
-        self.dismissAnimated(animated)
-        self.notifyDelegatePopTipViewWasDismissedByUser()
+    func autoDismissAnimatedDidFire(_ theTimer: Timer) {
+        let animated = (theTimer.userInfo as! [String: Any])["animated"] as! Bool
+        dismissAnimated(animated)
+        notifyDelegatePopTipViewWasDismissedByUser()
     }
     
-    func autoDismissAnimated(animated: Bool, atTimeInterval timeInvertal:NSTimeInterval) {
-        var userInfo = NSDictionary(object: true, forKey: "animated")
-        self.autoDismissTimer = NSTimer.scheduledTimerWithTimeInterval(timeInvertal, target: self, selector: "autoDismissAnimatedDidFire:", userInfo: userInfo, repeats: false)
+    func autoDismissAnimated(_ animated: Bool, atTimeInterval timeInvertal:TimeInterval) {
+        autoDismissTimer = Timer.scheduledTimer(timeInterval: timeInvertal, target: self, selector: #selector(autoDismissAnimatedDidFire(_:)), userInfo: ["animated": true], repeats: false)
     }
     
     func notifyDelegatePopTipViewWasDismissedByUser() {
-        self.delegate?.popTipViewWasDismissedByUser(self)
+        delegate?.popTipViewWasDismissedByUser(self)
     }
     
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        if self.disableTapToDismiss {
-            super.touchesBegan(touches, withEvent: event)
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if disableTapToDismiss {
+            super.touchesBegan(touches, with: event)
             return
         }
-        self.dismissByUser()
+        dismissByUser()
     }
     
-    func dismissTapAnywhereFired(button: UIButton) {
-        self.dismissByUser()
+    func dismissTapAnywhereFired(_ button: UIButton) {
+        dismissByUser()
     }
     
     func dismissByUser() {
-        self.highlight = true
-        self.setNeedsDisplay()
-        self.dismissAnimated(true)
-        self.notifyDelegatePopTipViewWasDismissedByUser()
+        highlight = true
+        setNeedsDisplay()
+        dismissAnimated(true)
+        notifyDelegatePopTipViewWasDismissedByUser()
     }
     
-    func popAnimationDidStop(animationID: String, finished: Bool, context: AnyObject) {
+    func popAnimationDidStop(_ animationID: String, finished: Bool, context: Any) {
         UIView.beginAnimations(nil, context: nil)
         UIView.setAnimationDuration(0.1)
-        self.transform = CGAffineTransformIdentity
+        transform = CGAffineTransform.identity
         UIView.commitAnimations()
     }
     
-    func presentAnimatedPointingAtBarButtonItem(barButtonItem: UIBarButtonItem, autodismissAtTime time:NSTimeInterval) {
-        self.presentPointingAtBarButtonItem(barButtonItem, animated: true)
-        self.autoDismissAnimated(true, atTimeInterval: time)
+    func presentAnimatedPointingAtBarButtonItem(_ barButtonItem: UIBarButtonItem, autodismissAtTime time:TimeInterval) {
+        presentPointingAtBarButtonItem(barButtonItem, animated: true)
+        autoDismissAnimated(true, atTimeInterval: time)
     }
     
-    func presentAnimatedPointingAtView(atView: UIView, inView: UIView, autodismissAtTime time:NSTimeInterval) {
-        self.presentPointingAtView(atView, containerView: inView, animated: true)
-        self.autoDismissAnimated(true, atTimeInterval: time)
+    func presentAnimatedPointingAtView(_ atView: UIView, inView: UIView, autodismissAtTime time:TimeInterval) {
+        presentPointingAtView(atView, containerView: inView, animated: true)
+        autoDismissAnimated(true, atTimeInterval: time)
     }
 }

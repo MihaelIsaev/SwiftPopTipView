@@ -36,8 +36,8 @@ The source includes a universal (iPhone/iPad) demo app.
  
 ## Requirements
 
-* iOS 8+
-* Xcode 6.1.1+
+* iOS 8.1+
+* Xcode 8+
 
 ## Usage
 
@@ -45,8 +45,8 @@ Example 1 - point at a UIBarButtonItem in a nav bar::
 
 ``` swift
   // Present a SwiftPopTipView pointing at a UIBarButtonItem in the nav bar
-  let navBarLeftButtonPopTipView = SwiftPopTipView(message: "A message")
-  navBarLeftButtonPopTipView.presentPointingAtBarButtonItem(self.navigationItem.leftBarButtonItem, animated: true)
+let navBarLeftButtonPopTipView = SwiftPopTipView(message: "A message")
+navBarLeftButtonPopTipView.presentPointingAtBarButtonItem(navigationItem.leftBarButtonItem!, animated: true)
   
   // Dismiss a SwiftPopTipView
   navBarLeftButtonPopTipView.dismissAnimated(true)
@@ -56,27 +56,31 @@ Example 1 - point at a UIBarButtonItem in a nav bar::
 Example 2 - pointing at a UIButton, with custom color scheme::
 
 ``` swift
-  @IBAction func buttonAction(sender: UIButton) {
-    // Toggle popTipView when a standard UIButton is pressed
-    if let roundRectButtonPopTipView = self.roundRectButtonPopTipView {
-      // Dismiss
-      self.roundRectButtonPopTipView.dismissAnimated(true)
-      self.roundRectButtonPopTipView = nil
-    } else {
-      self.roundRectButtonPopTipView = SwiftPopTipView(message: "My message")
-      self.roundRectButtonPopTipView.delegate = self
-      self.roundRectButtonPopTipView.popColor = UIColor.lightGrayColor()
-      self.roundRectButtonPopTipView.textColor = UIColor.darkTextColor()
+class ViewController: UIViewController, SwiftPopTipViewDelegate {
+    var roundRectButtonPopTipView: SwiftPopTipView?
 
-      self.roundRectButtonPopTipView.presentPointingAtView(button, inView:self.view, animated: true)
+    @IBAction func buttonAction(_ sender: UIButton) {
+        // Toggle popTipView when a standard UIButton is pressed
+        if let _ = roundRectButtonPopTipView {
+            // Dismiss
+            roundRectButtonPopTipView?.dismissAnimated(true)
+            roundRectButtonPopTipView = nil
+        } else {
+            roundRectButtonPopTipView = SwiftPopTipView(message: "My message")
+            roundRectButtonPopTipView?.delegate = self
+            roundRectButtonPopTipView?.popColor = UIColor.lightGray
+            roundRectButtonPopTipView?.textColor = UIColor.darkText
+
+            roundRectButtonPopTipView?.presentPointingAtView(sender as! UIView, containerView: view, animated: true)
+        }
     }
-  }
 
-  //MARK: - SwiftPopTipViewDelegate methods
-  func popTipViewWasDismissedByUser(popTipView:SwiftPopTipView) {
-    // User can tap SwiftPopTipView to dismiss it
-    self.roundRectButtonPopTipView = nil
-  }
+    //MARK: - SwiftPopTipViewDelegate methods
+    func popTipViewWasDismissedByUser(popTipView: SwiftPopTipView) {
+        // User can tap SwiftPopTipView to dismiss it
+        roundRectButtonPopTipView = nil
+    }
+}
 ```
 
 ## Support
