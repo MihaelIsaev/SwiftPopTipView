@@ -44,12 +44,13 @@ class SwiftPopTipView: UIView {
     var cornerRadius: CGFloat = 10
     var borderWidth: CGFloat = 0.1
     var highlight = false
-    var hasShadow: Bool {
+    private var _hasShadow: Bool?
+    var hasShadow: Bool! {
         get {
-            return self.hasShadow
+            return self._hasShadow
         }
         set {
-            self.hasShadow = newValue
+            self._hasShadow = newValue
             if newValue {
                 layer.shadowOffset = CGSize(width: 0, height: 3)
                 layer.shadowRadius = 2
@@ -283,7 +284,7 @@ class SwiftPopTipView: UIView {
             let titleParagraphStyle = NSMutableParagraphStyle()
             titleParagraphStyle.alignment = titleAlignment
             titleParagraphStyle.lineBreakMode = .byClipping
-            title.draw(with: titleFrame, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: titleFont, NSForegroundColorAttributeName: titleColor!, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil)
+            title.draw(with: titleFrame, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: titleFont, NSAttributedString.Key.foregroundColor: titleColor!, NSAttributedString.Key.paragraphStyle: titleParagraphStyle], context: nil)
         }
         
         if let message = message {
@@ -294,14 +295,14 @@ class SwiftPopTipView: UIView {
                 let titleParagraphStyle = NSMutableParagraphStyle()
                 titleParagraphStyle.alignment = titleAlignment
                 titleParagraphStyle.lineBreakMode = .byClipping
-                textFrame.origin.y += title.boundingRect(with: CGSize(width: textFrame.size.width, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: titleFont, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil).size.height
+                textFrame.origin.y += title.boundingRect(with: CGSize(width: textFrame.size.width, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: titleFont, NSAttributedString.Key.paragraphStyle: titleParagraphStyle], context: nil).size.height
             }
             
             let textParagraphStyle = NSMutableParagraphStyle()
             textParagraphStyle.alignment = textAlignment
             textParagraphStyle.lineBreakMode = .byWordWrapping
             
-            message.draw(with: textFrame, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: textFont, NSParagraphStyleAttributeName: textParagraphStyle, NSForegroundColorAttributeName: textColor], context: nil)
+            message.draw(with: textFrame, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: textFont, NSAttributedString.Key.paragraphStyle: textParagraphStyle, NSAttributedString.Key.foregroundColor: textColor], context: nil)
         }
     }
     
@@ -310,7 +311,7 @@ class SwiftPopTipView: UIView {
         let targetSuperview = targetView.superview
         var containerView: UIView?
         if type(of: targetSuperview!) === UINavigationBar.self {
-            containerView = UIApplication.shared.keyWindow
+            containerView = UIApplication.shared.windows.first { $0.isKeyWindow }
         } else if type(of: targetSuperview!) === UIToolbar.self {
             containerView = targetSuperview?.superview
         }
@@ -339,7 +340,7 @@ class SwiftPopTipView: UIView {
         if dismissTapAnywhere {
             dismissTarget = UIButton(type: .custom)
             dismissTarget?.addTarget(self, action: #selector(dismissTapAnywhereFired(_:)), for: .touchUpInside)
-            dismissTarget?.setTitle("", for: UIControlState())
+            dismissTarget?.setTitle("", for: UIControl.State())
             dismissTarget?.frame = containerView.bounds
             if let dismissTarget = dismissTarget {
                 containerView.addSubview(dismissTarget)
@@ -378,7 +379,7 @@ class SwiftPopTipView: UIView {
             let textParagraphStyle = NSMutableParagraphStyle()
             textParagraphStyle.alignment = textAlignment
             textParagraphStyle.lineBreakMode = .byWordWrapping
-            textSize = message.boundingRect(with: CGSize(width: rectWidth, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: textFont, NSParagraphStyleAttributeName: textParagraphStyle], context: nil).size
+            textSize = message.boundingRect(with: CGSize(width: rectWidth, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: textFont, NSAttributedString.Key.paragraphStyle: textParagraphStyle], context: nil).size
         }
         if let customView = customView {
             textSize = customView.frame.size
@@ -386,7 +387,7 @@ class SwiftPopTipView: UIView {
         if let title = title {
             let titleParagraphStyle = NSMutableParagraphStyle()
             titleParagraphStyle.lineBreakMode = .byClipping
-            textSize.height += title.boundingRect(with: CGSize(width: rectWidth, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: titleFont, NSParagraphStyleAttributeName: titleParagraphStyle], context: nil).size.height
+            textSize.height += title.boundingRect(with: CGSize(width: rectWidth, height: 99999.0), options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: titleFont, NSAttributedString.Key.paragraphStyle: titleParagraphStyle], context: nil).size.height
         }
         
         bubbleSize = CGSize(width: textSize.width + cornerRadius*2, height: textSize.height + cornerRadius*2)
@@ -468,25 +469,24 @@ class SwiftPopTipView: UIView {
             } else if animation == .pop {
                 frame = finalFrame
                 alpha = 0.5
-                
                 transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
                 
-                UIView.beginAnimations(nil, context: nil)
-                UIView.setAnimationDelegate(self)
-                UIView.setAnimationDidStop(#selector(popAnimationDidStop(_:finished:context:)))
-                UIView.setAnimationDuration(0.15)
-                transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
-                alpha = 1
-                UIView.commitAnimations()
+                UIView.animate(withDuration: 0.15) {
+                    self.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                    self.alpha = 1
+                } completion: { (finish) in
+                    self.popAnimationDidStop()
+                }
+
             }
             
             setNeedsDisplay()
             
             if animation == .slide {
-                UIView.beginAnimations(nil, context: nil)
-                alpha = 1
-                frame = finalFrame
-                UIView.commitAnimations()
+                UIView.animate(withDuration: 0.15, animations: {
+                    self.alpha = 1
+                    self.frame = finalFrame
+                }, completion: nil)
             }
         } else {
             setNeedsDisplay()
@@ -494,7 +494,7 @@ class SwiftPopTipView: UIView {
         }
     }
     
-    func finaliseDismiss() {
+    @objc func finaliseDismiss() {
         autoDismissTimer?.invalidate()
         autoDismissTimer = nil
         
@@ -514,19 +514,18 @@ class SwiftPopTipView: UIView {
         if animated {
             var customFrame = frame
             customFrame.origin.y += 10
-            
-            UIView.beginAnimations(nil, context: nil)
-            alpha = 0
-            frame = customFrame
-            UIView.setAnimationDelegate(self)
-            UIView.setAnimationDidStop(#selector(finaliseDismiss))
-            UIView.commitAnimations()
+             UIView.animate(withDuration: 0.15, delay: 0, options: .showHideTransitionViews, animations: {
+                self.alpha = 0
+                self.frame = customFrame
+            }, completion: { finished in
+                self.finaliseDismiss()
+            })
         } else {
             finaliseDismiss()
         }
     }
     
-    func autoDismissAnimatedDidFire(_ theTimer: Timer) {
+    @objc func autoDismissAnimatedDidFire(_ theTimer: Timer) {
         let animated = (theTimer.userInfo as! [String: Any])["animated"] as! Bool
         dismissAnimated(animated)
         notifyDelegatePopTipViewWasDismissedByUser()
@@ -548,7 +547,7 @@ class SwiftPopTipView: UIView {
         dismissByUser()
     }
     
-    func dismissTapAnywhereFired(_ button: UIButton) {
+    @objc func dismissTapAnywhereFired(_ button: UIButton) {
         dismissByUser()
     }
     
@@ -559,11 +558,10 @@ class SwiftPopTipView: UIView {
         notifyDelegatePopTipViewWasDismissedByUser()
     }
     
-    func popAnimationDidStop(_ animationID: String, finished: Bool, context: Any) {
-        UIView.beginAnimations(nil, context: nil)
-        UIView.setAnimationDuration(0.1)
-        transform = CGAffineTransform.identity
-        UIView.commitAnimations()
+    @objc func popAnimationDidStop() {
+        UIView.animate(withDuration: 0.1, animations: {
+            self.transform = CGAffineTransform.identity
+        }, completion: nil)
     }
     
     func presentAnimatedPointingAtBarButtonItem(_ barButtonItem: UIBarButtonItem, autodismissAtTime time:TimeInterval) {
@@ -576,3 +574,4 @@ class SwiftPopTipView: UIView {
         autoDismissAnimated(true, atTimeInterval: time)
     }
 }
+
